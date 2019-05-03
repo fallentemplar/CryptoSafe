@@ -2,13 +2,13 @@
 using System.Text;
 using System.Windows.Forms;
 using SecurityDriven.Inferno;
+using SecurityDriven.Inferno.Extensions;
 
 namespace ProyectoCifrado2
 {
     public partial class Form1 : Form
     {
-        //static byte[] textoSalt = Encoding.UTF8.GetBytes("hola");
-        //static ArraySegment <byte> salt = new ArraySegment<byte>(textoSalt, 0, 0);
+        static byte[] claveMaestra;
 
         public Form1()
         {
@@ -24,12 +24,10 @@ namespace ProyectoCifrado2
         {
             if(campo_contrasena.TextLength>0 && campo_cifrar.TextLength > 0)
             {
-                var contrasena = Encoding.UTF8.GetBytes(campo_contrasena.ToString());
-                var cifrado = new ArraySegment<byte>(Encoding.UTF8.GetBytes(campo_cifrar.Text), 0, Encoding.UTF8.GetBytes(campo_cifrar.Text).Length);
-                var salt = new ArraySegment<byte>(Encoding.UTF8.GetBytes("hola"), 0, 4);
-                byte[] textoCifrado = SuiteB.Encrypt(contrasena, cifrado,salt);
-                campo_descifrar.Text = Encoding.UTF8.GetString(textoCifrado);
-                //campo_cifrar.Clear();
+                claveMaestra = Utils.SafeUTF8.GetBytes(campo_contrasena.Text);
+                var textoCifrado = Cifrar(campo_cifrar.Text);
+                campo_descifrar.Text = textoCifrado;
+                campo_cifrar.Clear();
             }
         }
 
@@ -37,8 +35,31 @@ namespace ProyectoCifrado2
         {
             if (campo_contrasena.TextLength > 0 && campo_descifrar.TextLength>0)
             {
-                
+                claveMaestra = Utils.SafeUTF8.GetBytes(campo_contrasena.Text);
+                var textoDescifrado = Descifrar(campo_descifrar.Text);
+                campo_cifrar.Text = textoDescifrado;
+                campo_descifrar.Clear();
             }
         }
+
+        public static string Cifrar(string textoPlano)
+        {
+            var seg_array_texto = Utils.SafeUTF8.GetBytes(textoPlano).AsArraySegment();
+            var textoCifrado = SuiteB.Encrypt(claveMaestra, seg_array_texto);
+            return textoCifrado.ToB64Url();
+        }
+
+        public static string Descifrar(string textoCifrado)
+        {
+            var textoCifradoArrSeg = textoCifrado.FromB64Url().AsArraySegment();
+            var decryptedPassword = SuiteB.Decrypt(
+                claveMaestra,
+                textoCifradoArrSeg
+                );
+
+            return Utils.SafeUTF8.GetString(decryptedPassword);
+        }
+
+
     }
 }

@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PruebaCifrado1", "PruebaCifrado1\PruebaCifrado1.csproj", "{F4E5C398-F751-478E-A00E-E45DF6945534}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProyectoCifrado2", "ProyectoCifrado2\ProyectoCifrado2.csproj", "{B2E98FED-4CD9-4F43-BE9F-F90FD2919E3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PruebaCifrado2", "PruebaCifrado2\PruebaCifrado2.csproj", "{AEBF78F4-CDAC-42B9-97BA-BFFF0D7B0686}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProyectoCifrado3", "ProyectoCifrado3\ProyectoCifrado3.csproj", "{C8B2F6D8-F820-4DEF-8A35-195CF1836293}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriptoZorro", "CriptoZorro\CriptoZorro.csproj", "{13E3422B-B1D6-4072-A7E9-13FBBA4FA675}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,8 +31,19 @@ Global
 		{AEBF78F4-CDAC-42B9-97BA-BFFF0D7B0686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEBF78F4-CDAC-42B9-97BA-BFFF0D7B0686}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEBF78F4-CDAC-42B9-97BA-BFFF0D7B0686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8B2F6D8-F820-4DEF-8A35-195CF1836293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8B2F6D8-F820-4DEF-8A35-195CF1836293}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8B2F6D8-F820-4DEF-8A35-195CF1836293}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8B2F6D8-F820-4DEF-8A35-195CF1836293}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13E3422B-B1D6-4072-A7E9-13FBBA4FA675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13E3422B-B1D6-4072-A7E9-13FBBA4FA675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13E3422B-B1D6-4072-A7E9-13FBBA4FA675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13E3422B-B1D6-4072-A7E9-13FBBA4FA675}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB21A461-62CD-45AF-B393-3B93E7CBBE80}
 	EndGlobalSection
 EndGlobal

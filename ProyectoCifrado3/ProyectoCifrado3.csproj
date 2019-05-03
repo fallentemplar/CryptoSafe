@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B2E98FED-4CD9-4F43-BE9F-F90FD2919E3B}</ProjectGuid>
+    <ProjectGuid>{C8B2F6D8-F820-4DEF-8A35-195CF1836293}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProyectoCifrado2</RootNamespace>
-    <AssemblyName>ProyectoCifrado2</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <RootNamespace>ProyectoCifrado3</RootNamespace>
+    <AssemblyName>ProyectoCifrado3</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -34,12 +34,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SecurityDriven.Inferno, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Inferno.1.5.1\lib\net462\SecurityDriven.Inferno.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SecurityDriven.Inferno, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inferno.1.5.3\lib\net462\SecurityDriven.Inferno.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,16 +54,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="AcercaDe.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="AcercaDe.Designer.cs">
+      <DependentUpon>AcercaDe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Archivos.cs" />
+    <Compile Include="Cripto.cs" />
+    <Compile Include="Criptografia.cs" />
+    <Compile Include="CriptoZorro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CriptoZorro.Designer.cs">
+      <DependentUpon>CriptoZorro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Procesando.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Procesando.Designer.cs">
+      <DependentUpon>Procesando.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="AcercaDe.resx">
+      <DependentUpon>AcercaDe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CriptoZorro.resx">
+      <DependentUpon>CriptoZorro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Procesando.resx">
+      <DependentUpon>Procesando.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -85,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="System\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\linked in.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -38,8 +38,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.campo_contrasena = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.test_texto = new System.Windows.Forms.Label();
-            this.test_pass = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +56,7 @@
             this.campo_cifrar.Location = new System.Drawing.Point(6, 32);
             this.campo_cifrar.Multiline = true;
             this.campo_cifrar.Name = "campo_cifrar";
+            this.campo_cifrar.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.campo_cifrar.Size = new System.Drawing.Size(158, 98);
             this.campo_cifrar.TabIndex = 1;
             // 
@@ -110,6 +109,7 @@
             this.campo_descifrar.Location = new System.Drawing.Point(0, 32);
             this.campo_descifrar.Multiline = true;
             this.campo_descifrar.Name = "campo_descifrar";
+            this.campo_descifrar.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.campo_descifrar.Size = new System.Drawing.Size(164, 98);
             this.campo_descifrar.TabIndex = 5;
             // 
@@ -139,31 +139,11 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Contraseña";
             // 
-            // test_texto
-            // 
-            this.test_texto.AutoSize = true;
-            this.test_texto.Location = new System.Drawing.Point(19, 220);
-            this.test_texto.Name = "test_texto";
-            this.test_texto.Size = new System.Drawing.Size(35, 13);
-            this.test_texto.TabIndex = 8;
-            this.test_texto.Text = "label4";
-            // 
-            // test_pass
-            // 
-            this.test_pass.AutoSize = true;
-            this.test_pass.Location = new System.Drawing.Point(19, 246);
-            this.test_pass.Name = "test_pass";
-            this.test_pass.Size = new System.Drawing.Size(35, 13);
-            this.test_pass.TabIndex = 9;
-            this.test_pass.Text = "label4";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(385, 328);
-            this.Controls.Add(this.test_pass);
-            this.Controls.Add(this.test_texto);
+            this.ClientSize = new System.Drawing.Size(385, 234);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.campo_contrasena);
             this.Controls.Add(this.groupBox2);
@@ -192,8 +172,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox campo_contrasena;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label test_texto;
-        private System.Windows.Forms.Label test_pass;
     }
 }
 
