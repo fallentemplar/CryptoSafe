@@ -59,6 +59,7 @@ namespace ProyectoCifrado3
                     byte[] bytesCifrados = Criptografia.Cifrar(archivo.ToString(), contrasena);
                     Archivos.EscribirArchivo(bytesCifrados,archivo.ToString(),true);
                 }
+                caja_archivos.Items.Clear();
             }
         }
 
@@ -76,6 +77,7 @@ namespace ProyectoCifrado3
                     byte[] bytesCifrados = Criptografia.Descifrar(archivo.ToString(), contrasena);
                     Archivos.EscribirArchivo(bytesCifrados, archivo.ToString(), false);
                 }
+                caja_archivos.Items.Clear();
             }
         }
 
