@@ -12,9 +12,17 @@ namespace ProyectoCifrado3
 {
     public partial class Procesando : Form
     {
-        public Procesando()
+        int Avance;
+        public Procesando(int avance)
         {
+            this.Text = "Progreso";
             InitializeComponent();
+            Avance = 100/avance;
+        }
+
+        public void Avanzar()
+        {
+            barraProgreso.Value += Avance;
         }
     }
 }

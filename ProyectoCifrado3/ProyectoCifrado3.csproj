@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SecurityDriven.Inferno, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Inferno.1.5.3\lib\net462\SecurityDriven.Inferno.dll</HintPath>
@@ -54,20 +57,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcercaDe.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AcercaDe.Designer.cs">
-      <DependentUpon>AcercaDe.cs</DependentUpon>
-    </Compile>
     <Compile Include="Archivos.cs" />
     <Compile Include="Cripto.cs" />
     <Compile Include="Criptografia.cs" />
-    <Compile Include="CriptoZorro.cs">
+    <Compile Include="CriptoSafe.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CriptoZorro.Designer.cs">
-      <DependentUpon>CriptoZorro.cs</DependentUpon>
+    <Compile Include="CriptoSafe.Designer.cs">
+      <DependentUpon>CriptoSafe.cs</DependentUpon>
     </Compile>
     <Compile Include="Procesando.cs">
       <SubType>Form</SubType>
@@ -77,11 +74,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AcercaDe.resx">
-      <DependentUpon>AcercaDe.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CriptoZorro.resx">
-      <DependentUpon>CriptoZorro.cs</DependentUpon>
+    <EmbeddedResource Include="CriptoSafe.resx">
+      <DependentUpon>CriptoSafe.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procesando.resx">
       <DependentUpon>Procesando.cs</DependentUpon>
@@ -115,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\linked in.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\drop files.png" />
+    <None Include="Resources\hachis.ico" />
+    <None Include="Resources\logo.ico" />
+    <None Include="Resources\drop files1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -27,7 +27,7 @@ namespace ProyectoCifrado3
                 using (FileStream archivoFuente = new FileStream(rutaArchivo,FileMode.Open, FileAccess.Read))
                 {
                     byte[] extension = Path.GetExtension(rutaArchivo).ToBytes();
-                    // Read the source file into a byte array.
+                    
                     bytesArchivo = new byte[archivoFuente.Length+extension.Length];
                     int noBytesPorLeer = (int)archivoFuente.Length;
                     int noBitsLeidos = 0;
@@ -47,13 +47,13 @@ namespace ProyectoCifrado3
                     noBytesPorLeer = bytesArchivo.Length;
                     archivoFuente.Dispose();
                 }
-                var archivoCifrado = SuiteB.Encrypt(contrasena.ToBytes(), bytesArchivo.AsArraySegment<byte>());
+
+                byte[] archivoCifrado = SuiteB.Encrypt(contrasena.ToBytes(), bytesArchivo.AsArraySegment<byte>());
                 return archivoCifrado;
             }catch(FileNotFoundException){
-                MessageBox.Show("El archivo solicitado no existe");
+                MessageBox.Show("El archivo seleccionado no existe");
                 return null;
             }
-            
         }
 
         public static byte[] Descifrar(string rutaArchivo, string contrasena)

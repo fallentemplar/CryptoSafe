@@ -16,7 +16,7 @@ namespace ProyectoCifrado3
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new CriptoZorro());
+            Application.Run(new CriptoSafe());
         }
     }
 }

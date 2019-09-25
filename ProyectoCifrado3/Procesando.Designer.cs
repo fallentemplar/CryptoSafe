@@ -40,13 +40,15 @@
             this.barraProgreso.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.barraProgreso.TabIndex = 0;
             // 
-            // Form1
+            // Procesando
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(373, 48);
             this.Controls.Add(this.barraProgreso);
-            this.Name = "Form1";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "Procesando";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Procesando...";
             this.ResumeLayout(false);
 
