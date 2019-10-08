@@ -4,18 +4,16 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Linq;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace ProyectoCifrado3
 {
     public partial class CriptoSafe : Form
     {
-        //const string colorPrimario = "#FF0288D1";
         const string colorPrimario = "#FF00BCD4";
-        const string colorSecundario = "#FF000000";//"#FFB2EBF2";
+        const string colorSecundario = "#FF000000";
         const string colorBordes = "#FFFFFFFF";
         const string colorBotones = "#FF03A9F4";
-        //const string colorTexto = "#FFFFFFFF";
-
 
         string[] listaArchivos;
         string contrasena;
@@ -81,7 +79,6 @@ namespace ProyectoCifrado3
 
         private void Boton_cifrar_Click(object sender, EventArgs e)
         {
-            Thread hiloCifrar;
             if (caja_archivos.Items.Count == 0)
             {
                 MessageBox.Show("No hay archivos seleccionados", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -92,27 +89,37 @@ namespace ProyectoCifrado3
                 eliminarArchivos = dialogoEliminarArchivos == DialogResult.Yes ? true : false;
                 contrasena = campo_contrasena.Text;
                 listaArchivos = caja_archivos.Items.OfType<string>().ToArray();
-                hiloCifrar = new Thread(CifrarArchivos);
-                hiloCifrar.Start();
+                byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+                CifrarArchivos(keyMaterial, eliminarArchivos);
                 campo_contrasena.Clear();
                 caja_archivos.Items.Clear();
             }
         }
 
-        private void CifrarArchivos()
+        private async Task CifrarArchivos(byte[] keyMaterial, bool eliminarArchivos)
         {
             Procesando barraProgreso = new Procesando(listaArchivos.Length);
             barraProgreso.Show();
             foreach (var archivo in listaArchivos)
             {
-                byte[] bytesCifrados = Criptografia.Cifrar(archivo.ToString(), contrasena);
-                bool archivoEscrito = Archivos.EscribirArchivo(bytesCifrados, archivo.ToString(), true);
-                if (eliminarArchivos && archivoEscrito) //Si hay que borrar y se pudo escribir el nuevo
-                    Archivos.EliminarArchivo(archivo.ToString());
-                else if(eliminarArchivos && !archivoEscrito)
-                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo.ToString()) + "' no fue cifrado porque ya existe en el directorio destino\nSu archivo original no fue eliminado");
-                else if(!archivoEscrito)
-                    MessageBox.Show("El archivo '"+ Path.GetFileName(archivo.ToString())+"' no fue cifrado porque ya existe en el directorio destino");
+                try
+                {
+                    string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo), Path.GetFileName(archivo)) + ".crypt";
+
+                    await ProyectoCifrado3.Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo, rutaDestino, true);
+
+                    if (eliminarArchivos)
+                        Archivos.EliminarArchivo(archivo.ToString());
+                }
+                catch (System.Security.Cryptography.CryptographicException)
+                {
+                    MessageBox.Show("El archivo " + Path.GetFileName(archivo) + " no pudo ser cifrado");
+                }
+                catch (FileNotFoundException)
+                {
+                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo) + "' no pudo ser cifrado\n" +
+                        "El archivo especificado no existe");
+                }
                 barraProgreso.Avanzar();
             }
             barraProgreso.Hide();
@@ -121,7 +128,6 @@ namespace ProyectoCifrado3
 
         private void Boton_descifrar_Click(object sender, EventArgs e)
         {
-            Thread hiloDescifrar;
             if (caja_archivos.Items.Count == 0){
                 DialogResult dialogoSinArchivos = MessageBox.Show("No hay archivos seleccionados", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }else if (campo_contrasena.TextLength > 0){
@@ -129,36 +135,41 @@ namespace ProyectoCifrado3
                 eliminarArchivos = dialogoEliminarArchivos == DialogResult.Yes ? true : false;
                 contrasena = campo_contrasena.Text;
                 listaArchivos = caja_archivos.Items.OfType<string>().ToArray();
-                hiloDescifrar = new Thread(DescifrarArchivos);
-                hiloDescifrar.Start();
+                byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+                DescifrarArchivos(keyMaterial, eliminarArchivos);
                 campo_contrasena.Clear();
                 caja_archivos.Items.Clear();
             }
         }
 
-        private void DescifrarArchivos()
+        private async Task DescifrarArchivos(byte[] keyMaterial, bool eliminarArchivos)
         {
             Procesando barraProgreso = new Procesando(listaArchivos.Length);
             barraProgreso.Show();
             foreach (var archivo in listaArchivos)
             {
-                byte[] bytesCifrados = Criptografia.Descifrar(archivo.ToString(), contrasena);
-                bool archivoEscrito = false;
-                if (bytesCifrados != null)
+                try
                 {
-                    archivoEscrito = Archivos.EscribirArchivo(bytesCifrados, archivo.ToString(), false);
-                    if (eliminarArchivos && archivoEscrito) //Si hay que borrar y se pudo escribir el nuevo
+                    string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo), Path.GetFileNameWithoutExtension(archivo));
+
+                    await ProyectoCifrado3.Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo, rutaDestino, false);
+
+                    if (eliminarArchivos)
                         Archivos.EliminarArchivo(archivo.ToString());
-                    else if (eliminarArchivos && !archivoEscrito)
-                        MessageBox.Show("El archivo '" + Path.GetFileName(archivo.ToString()) + "' no fue descifrado porque ya existe en el directorio destino\nSu archivo original no fue eliminado.");
-                    else if (!archivoEscrito)
-                        MessageBox.Show("El archivo '" + Path.GetFileName(archivo.ToString()) + "' no fue descifrado porque ya existe en el directorio destino.");
                 }
-                else
-                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo.ToString()) 
-                        + "' no fue descifrado.\nEsto puede deberse a las siguientes razones:\n* El archivo está dañado\n* No es un archivo cifrado con CryptoSafe.\n* Contraseña incorrecta");
+                catch (System.Security.Cryptography.CryptographicException)
+                {
+                    Archivos.EliminarArchivo(Path.Combine(Path.GetDirectoryName(archivo),Path.GetFileNameWithoutExtension(archivo)));
+                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo) + "' no pudo ser descifrado\n" +
+                        "Esto puede deberse a una de las siguientes razones:" +
+                        "\n1-El archivo está dañado\n2-La contraseña es incorrecta\n3-El archivo no fue cifrado con CryptoSafe", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (FileNotFoundException)
+                {
+                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo) + "' no pudo ser descifrado\n" +
+                        "El archivo especificado no existe");
+                }
                 barraProgreso.Avanzar();
-                //Thread.Sleep(2000);
             }
             barraProgreso.Hide();
             MessageBox.Show("La tarea ha finalizado");
