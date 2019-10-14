@@ -6,24 +6,16 @@
   tools:context=".MainActivity"
   >
   <item
-    android:id="@+id/search"
-    android:icon="@android:drawable/ic_menu_search"
+    android:id="@+id/addFiles"
+    android:icon="@drawable/add"
     crypt:showAsAction="always"
-    android:title="@string/action_search"
+    android:title="@string/action_add"
     />
-
   <item
     android:id="@+id/share"
     android:icon="@android:drawable/ic_menu_share"
     crypt:showAsAction="always"
     android:title="@string/action_share"
     />
-
-  <item
-    android:id="@+id/email"
-    android:icon="@android:drawable/ic_dialog_email"
-    crypt:showAsAction="always"
-    android:title="@string/action_email"
-    />
-
+  
 </menu>

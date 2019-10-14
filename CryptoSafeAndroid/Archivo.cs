@@ -13,10 +13,10 @@ using Android.Widget;
 
 namespace CryptoSafeAndroid
 {
-    class Archivo
+    public class Archivo
     {
         public string Nombre { get; set; }
-        public double Tamano { get; set; }
+        public string Tamano { get; set; }
         public string Extension { get; set; }
 
         public string ArchivoSinExtension()
