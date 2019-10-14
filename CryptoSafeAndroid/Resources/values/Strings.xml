@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">CryptoSafe</string>
-    <string name="action_settings">Configuraciones</string>
+  <string name="app_name">CryptoSafe</string>
+  <string name="action_settings">Settings</string>
+  <string name="action_share">Compartir</string>
+  <string name="action_search">Buscar</string>
+  <string name="action_email">Enviar por Email</string>
 </resources>
