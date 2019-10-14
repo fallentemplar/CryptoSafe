@@ -59,6 +59,8 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdaptadorPersonalizado.cs" />
+    <Compile Include="Archivo.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,6 +107,11 @@
   <ItemGroup>
     <AndroidResource Include="Resources\Drawable\Placeholder.png">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\archivo_registro.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
