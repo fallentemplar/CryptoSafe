@@ -2348,6 +2348,12 @@ namespace CryptoSafeAndroid
 			// aapt resource value: 0x7f08009b
 			public const int action0 = 2131230875;
 			
+			// aapt resource value: 0x7f0800b1
+			public const int action1 = 2131230897;
+			
+			// aapt resource value: 0x7f0800b2
+			public const int action2 = 2131230898;
+			
 			// aapt resource value: 0x7f08007b
 			public const int action_bar = 2131230843;
 			
