@@ -33,6 +33,5 @@ namespace CryptoSafeAndroid
             }
             return base.OnOptionsItemSelected(item);
         }
-
     }
 }
