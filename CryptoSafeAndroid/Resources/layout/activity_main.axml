@@ -10,35 +10,48 @@
 		android:minHeight="25px"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:textColor="@android:color/white"
 		/>
-	<Button
-		android:id="@+id/botonDescifrar"
-		android:text="Descifrar"
-		android:minWidth="350px"
-		android:minHeight="75px"
-		android:layout_width="wrap_content"
+
+	<LinearLayout
+		android:id="@+id/layoutBotonesCifrado"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:layout_alignParentRight="true"
-		/>
-	<Button
-		android:id="@+id/botonCifrar"
-		android:text="Cifrar"
-		android:minWidth="350px"
-		android:minHeight="75px"
-		android:layout_toLeftOf="@id/botonDescifrar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:layout_alignParentLeft="true"
-		/>
-	
+		android:weightSum="2"
+		android:orientation="horizontal"
+		android:layout_alignParentBottom="true">
+		<Button
+			android:id="@+id/botonCifrar"
+			android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+			android:text="Cifrar"
+			android:minWidth="40px"
+			android:minHeight="100px"
+			android:background="@color/colorAccent"
+			android:textColor="@android:color/white"
+			/>
+		<Button
+			android:id="@+id/botonDescifrar"
+			android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+			android:text="Descifrar"
+			android:minWidth="40px"
+			android:minHeight="100px"
+			android:background="@color/colorAccent"
+			android:textColor="@android:color/white"
+			/>
+		
+	</LinearLayout>
+
 	<EditText
 		android:id="@+id/campoContrasena"
 		android:inputType="textPassword"
 		android:hint="Contraseña"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_above="@id/botonDescifrar"
+		android:textColor="@android:color/white"
+		android:layout_above="@id/layoutBotonesCifrado"
 		/>
 </RelativeLayout>

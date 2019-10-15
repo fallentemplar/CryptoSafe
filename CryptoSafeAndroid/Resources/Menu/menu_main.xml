@@ -17,5 +17,4 @@
     crypt:showAsAction="always"
     android:title="@string/action_share"
     />
-  
 </menu>

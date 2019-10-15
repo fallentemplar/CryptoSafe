@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProyectoCifrado3
+namespace CryptoSafeAndroid
 {
     class Crypto
     {/// <summary>

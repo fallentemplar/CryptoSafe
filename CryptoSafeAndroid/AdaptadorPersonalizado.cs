@@ -15,7 +15,7 @@ namespace CryptoSafeAndroid
 {
     class AdaptadorPersonalizado : BaseAdapter<Archivo>
     {
-        List<Archivo> archivos;
+        public List<Archivo> archivos { get; }
 
         public AdaptadorPersonalizado(List<Archivo> archivos)
         {
