@@ -16,6 +16,7 @@ namespace CryptoSafeAndroid
     {
         ListView listaArchivosSeleccionados;
         AdaptadorPersonalizado adaptador;
+        EditText campoContrasena;
 
         int indice = 0;
 
@@ -25,6 +26,8 @@ namespace CryptoSafeAndroid
             SetContentView(Resource.Layout.activity_main);
 
             listaArchivosSeleccionados = FindViewById<ListView>(Resource.Id.listViewArchivos);
+            campoContrasena = FindViewById<EditText>(Resource.Id.campoContrasena);
+
             adaptador = new AdaptadorPersonalizado(ArchivosData.Archivos);
             listaArchivosSeleccionados.Adapter = adaptador;
 
@@ -32,16 +35,24 @@ namespace CryptoSafeAndroid
             Button botonDescifrar = FindViewById<Button>(Resource.Id.botonDescifrar);
 
             botonCifrar.Click += BotonCifrar_Click;
+            botonDescifrar.Click += BotonDescifrar_Click;
+        }
+
+        private void BotonDescifrar_Click(object sender, EventArgs e)
+        {
+            string contrasena = campoContrasena.Text;
+            byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+            var eliminarArchivos = false; //Temporal
+            DescifrarArchivos(keyMaterial, eliminarArchivos);
         }
 
         private void BotonCifrar_Click(object sender, System.EventArgs e)
         {
-            Toast.MakeText(this, "Boton cifrar", ToastLength.Short).Show();
-            string contrasena = "12345678"; //Temporal
+            string contrasena = campoContrasena.Text;
             byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
             var eliminarArchivos = false; //Temporal
             CifrarArchivos(keyMaterial, eliminarArchivos);
-            Toast.MakeText(this, "Ya le di en CIFRAR", ToastLength.Short).Show();
+            //Toast.MakeText(this, "Ya le di en CIFRAR", ToastLength.Short).Show();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -74,32 +85,28 @@ namespace CryptoSafeAndroid
 
         private async Task CifrarArchivos(byte[] keyMaterial, bool eliminarArchivos)
         {
-            Toast.MakeText(this, "Entrando a cifrar", ToastLength.Short).Show();
             foreach (var archivo in adaptador.archivos)
             {
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
-                    Toast.MakeText(this, rutaDestino, ToastLength.Short).Show();
+                    Toast.MakeText(this, rutaDestino, ToastLength.Long).Show();
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
-                    Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado", ToastLength.Short).Show();
+                    Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado", ToastLength.Long).Show();
                 }
                 catch (FileNotFoundException)
                 {
-                    Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado", ToastLength.Short).Show();
+                    Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado", ToastLength.Long).Show();
                 }
                 catch (Exception e)
                 {
-                    
-                    Toast.MakeText(this, e.Message, ToastLength.Short).Show();
+                    Toast.MakeText(this, e.Message, ToastLength.Long).Show();
                     Console.WriteLine(e.Message+"\n"+ e.GetType()+"|");
                 }
-                Toast.MakeText(this, "Fin de uno", ToastLength.Short).Show();
             }
-            Toast.MakeText(this, "Ya salí", ToastLength.Short).Show();
         }
 
         private async Task DescifrarArchivos(byte[] keyMaterial, bool eliminarArchivos)
@@ -111,12 +118,11 @@ namespace CryptoSafeAndroid
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
 
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, false);
-
                     //if (eliminarArchivos)
                     //Archivos.EliminarArchivo(archivo.ToString());
                 }
                 catch (Exception) { }
-                    /*
+                /*
                 catch (System.Security.Cryptography.CryptographicException)
                 {
                     Archivos.EliminarArchivo(Path.Combine(Path.GetDirectoryName(archivo), Path.GetFileNameWithoutExtension(archivo)));
@@ -129,7 +135,6 @@ namespace CryptoSafeAndroid
                     MessageBox.Show("El archivo '" + Path.GetFileName(archivo) + "' no pudo ser descifrado\n" +
                         "El archivo especificado no existe");
                 }*/
-                
             }
         }
     }

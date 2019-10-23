@@ -28,14 +28,16 @@ namespace CryptoSafeAndroid
         {
             archivos.Add(new Archivo()
             {
-                Nombre = "/storage/DD7A-A973/test/IMG_20190504_232840.jpg",
+                //Nombre = "/storage/DD7A-A973/test/IMG_20190504_232840.jpg",
+                Nombre = "/storage/emulated/0/Download/IMG_20190504_232840.jpg",
                 Tamano = "29292KB",
                 Extension = "jpg"
             });
 
             archivos.Add(new Archivo()
             {
-                Nombre = "/storage/DD7A-A973/test/IMG_20190509_144404.jpg",
+                //Nombre = "/storage/DD7A-A973/test/IMG_20190509_144404.jpg",
+                Nombre = "/storage/emulated/0/Download/IMG_20190509_144404.jpg",
                 Tamano = "665KB",
                 Extension = "png"
             });

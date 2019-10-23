@@ -68,7 +68,16 @@ namespace CryptoSafeAndroid
             pder.HashName = "SHA1";
             return pder.GetBytes(tamano);
         }
+        
 
+        /// <summary>
+        /// Metodo que crea un cifrador o descifrador 
+        /// </summary>
+        /// <param name="keyMaterial"></param>
+        /// <param name="rutaArchivoOriginal">Ruta al archivo que se va a procesar</param>
+        /// <param name="rutaDestino">Ruta de carpeta donde se guardará el archivo procesado</param>
+        /// <param name="cifrar">Determina si se va a cifrar o descifrar. TRUE=Cifrar</param>
+        /// <returns></returns>
         public static async Task CifradoDescifradoAsincrono(byte[] keyMaterial, string rutaArchivoOriginal, string rutaDestino,bool cifrar)
         {
             ISymmetricKeyAlgorithmProvider aesGcm = WinRTCrypto.SymmetricKeyAlgorithmProvider.OpenAlgorithm(PCLCrypto.SymmetricAlgorithm.AesCbcPkcs7);
