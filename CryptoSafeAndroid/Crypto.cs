@@ -15,7 +15,7 @@ namespace CryptoSafeAndroid
      /// <param name="contrasena">a password in plain text, perhaps an easy
      /// to remember one
      /// </param>
-     /// <param name="tamano">The size in BITS of the key</param>
+     /// <param name="tamano">El tamaño en bits de la clave</param>
      /// <returns>A key for use in encryption</returns>
         public static byte[] DerivarClaveDeContrasena(string contrasena, int tamano)
         {

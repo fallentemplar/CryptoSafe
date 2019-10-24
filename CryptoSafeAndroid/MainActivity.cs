@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
 using System;
+using AlertDialog = Android.App.AlertDialog;
 
 namespace CryptoSafeAndroid
 {
@@ -72,13 +73,13 @@ namespace CryptoSafeAndroid
             }
             else if (id == Resource.Id.addFiles)
             {
-                adaptador.AgregarArchivoALista(new Archivo
+                /*adaptador.AgregarArchivoALista(new Archivo
                 {
                     Nombre = "Archivo"+indice,
                     Extension = "zip",
                     Tamano = "4020.KB"
                 });
-                indice++;
+                indice++;*/
             }
             return base.OnOptionsItemSelected(item);
         }
@@ -90,21 +91,30 @@ namespace CryptoSafeAndroid
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
-                    Toast.MakeText(this, rutaDestino, ToastLength.Long).Show();
+                    //Toast.MakeText(this, rutaDestino, ToastLength.Long).Show();
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
-                    Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado", ToastLength.Long).Show();
+                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                    mensajeInformacion.SetTitle("Error al cifrar");
+                    mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado");
+                    mensajeInformacion.Show();
                 }
                 catch (FileNotFoundException)
                 {
-                    Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado", ToastLength.Long).Show();
+                    //Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado", ToastLength.Long).Show();
+                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                    mensajeInformacion.SetTitle("Error al cifrar");
+                    mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado");
+                    mensajeInformacion.Show();
                 }
-                catch (Exception e)
+                catch (DirectoryNotFoundException)
                 {
-                    Toast.MakeText(this, e.Message, ToastLength.Long).Show();
-                    Console.WriteLine(e.Message+"\n"+ e.GetType()+"|");
+                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                    mensajeInformacion.SetTitle("Error al cifrar");
+                    mensajeInformacion.SetMessage("El directorio destino '" + Path.GetDirectoryName(archivo.Nombre) + "' no pudo ser encontrado");
+                    mensajeInformacion.Show();
                 }
             }
         }
@@ -116,25 +126,33 @@ namespace CryptoSafeAndroid
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
-
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, false);
                     //if (eliminarArchivos)
                     //Archivos.EliminarArchivo(archivo.ToString());
                 }
-                catch (Exception) { }
-                /*
                 catch (System.Security.Cryptography.CryptographicException)
                 {
-                    Archivos.EliminarArchivo(Path.Combine(Path.GetDirectoryName(archivo), Path.GetFileNameWithoutExtension(archivo)));
-                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo) + "' no pudo ser descifrado\n" +
-                        "Esto puede deberse a una de las siguientes razones:" +
-                        "\n1-El archivo está dañado\n2-La contraseña es incorrecta\n3-El archivo no fue cifrado con CryptoSafe", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //Archivos.EliminarArchivo(Path.Combine(Path.GetDirectoryName(archivo), Path.GetFileNameWithoutExtension(archivo)));
+                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                    mensajeInformacion.SetTitle("Error al descifrar");
+                    mensajeInformacion.SetMessage("Esto puede deberse a una de las siguientes razones:\n1-El archivo está dañado\n2-La contraseña es incorrecta\n3-El archivo no fue cifrado con CryptoSafe");
+                    mensajeInformacion.Show();
                 }
                 catch (FileNotFoundException)
                 {
-                    MessageBox.Show("El archivo '" + Path.GetFileName(archivo) + "' no pudo ser descifrado\n" +
-                        "El archivo especificado no existe");
-                }*/
+                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                    mensajeInformacion.SetTitle("Error al descifrar");
+                    mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado");
+                    mensajeInformacion.Show();
+                }
+                catch(DirectoryNotFoundException)
+                {
+                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                    mensajeInformacion.SetTitle("Error al descifrar");
+                    mensajeInformacion.SetMessage("El directorio destino '" + Path.GetDirectoryName(archivo.Nombre) + "' no pudo ser encontrado");
+                    
+                    mensajeInformacion.Show();
+                }
             }
         }
     }
