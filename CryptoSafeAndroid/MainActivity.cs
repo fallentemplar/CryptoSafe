@@ -13,6 +13,8 @@ using AlertDialog = Android.App.AlertDialog;
 namespace CryptoSafeAndroid
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+    //[IntentFilter(new string[] { Intent.ActionSend },Categories = new string[] { Intent.CategoryDefault },DataMimeType = "image/*")]
+    //[IntentFilter(new string[] { Intent.ActionSendMultiple },Categories = new string[] { Intent.CategoryDefault },DataMimeType = "image/*")]
     public class MainActivity : AppCompatActivity
     {
         ListView listaArchivosSeleccionados;
@@ -73,6 +75,7 @@ namespace CryptoSafeAndroid
             }
             else if (id == Resource.Id.addFiles)
             {
+                StartActivity(typeof(ExploradorArchivos));
                 /*adaptador.AgregarArchivoALista(new Archivo
                 {
                     Nombre = "Archivo"+indice,
