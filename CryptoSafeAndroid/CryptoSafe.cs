@@ -10,6 +10,7 @@ using System.IO;
 using System;
 using AlertDialog = Android.App.AlertDialog;
 using Android.Content;
+using Android.Util;
 
 namespace CryptoSafeAndroid
 {
@@ -22,11 +23,11 @@ namespace CryptoSafeAndroid
         ListView listaArchivosSeleccionados;
         AdaptadorPersonalizado adaptador;
         EditText campoContrasena;
+        const string tag = "CryptoSafe";
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            string tag = "CryptoSafe";
-            Android.Util.Log.Info(tag, "Plantilla de log: "+ this.PackageName+"|"+this.Class);
+            Log.Info(tag, "Plantilla de log: "+ this.PackageName+"|"+this.Class);
 
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
@@ -45,12 +46,15 @@ namespace CryptoSafeAndroid
             if (Intent.Action == Intent.ActionSend)
             {
                 ClipData.Item value = Intent.ClipData.GetItemAt(0);
+                Toast.MakeText(this, "Este es el IF del intent", ToastLength.Long).Show();
+                Log.Info(tag, "Este es el IF del intent");
             }
         }
 
         protected override void OnNewIntent(Intent intent)
         {
-            Toast.MakeText(this, "Holi", ToastLength.Long).Show();
+            Toast.MakeText(this, "Este es un nuevo intent", ToastLength.Long).Show();
+            Log.Info(tag, "Este es un nuevo intent");
         }
 
             private void BotonDescifrar_Click(object sender, EventArgs e)
