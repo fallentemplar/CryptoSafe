@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 using System.IO;
 using System;
 using AlertDialog = Android.App.AlertDialog;
+using Android.Content;
 
 namespace CryptoSafeAndroid
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+    [Activity(Name ="com.cryptosafe.aaar.CryptoSafe", Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     //[IntentFilter(new string[] { Intent.ActionSend },Categories = new string[] { Intent.CategoryDefault },DataMimeType = "image/*")]
     //[IntentFilter(new string[] { Intent.ActionSendMultiple },Categories = new string[] { Intent.CategoryDefault },DataMimeType = "image/*")]
-    public class MainActivity : AppCompatActivity
+    public class CryptoSafe : AppCompatActivity
     {
+        
         ListView listaArchivosSeleccionados;
         AdaptadorPersonalizado adaptador;
         EditText campoContrasena;
@@ -25,6 +27,11 @@ namespace CryptoSafeAndroid
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
+
+
+            string tag = "myApp";
+
+            Android.Util.Log.Info(tag, "Esto es Sparta "+ this.PackageName+"|"+this.Class);
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
@@ -39,9 +46,29 @@ namespace CryptoSafeAndroid
 
             botonCifrar.Click += BotonCifrar_Click;
             botonDescifrar.Click += BotonDescifrar_Click;
+            /*
+            try
+            {
+                if (Intent.Action == Intent.ActionSend)
+                {
+                    Toast.MakeText(this, "Holi", ToastLength.Long).Show();
+                    ClipData.Item value = Intent.ClipData.GetItemAt(0);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Toast.MakeText(this, e.Message, ToastLength.Long).Show();
+            }*/
+            
         }
 
-        private void BotonDescifrar_Click(object sender, EventArgs e)
+        protected override void OnNewIntent(Intent intent)
+        {
+            Toast.MakeText(this, "Holi", ToastLength.Long).Show();
+        }
+
+            private void BotonDescifrar_Click(object sender, EventArgs e)
         {
             string contrasena = campoContrasena.Text;
             byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
