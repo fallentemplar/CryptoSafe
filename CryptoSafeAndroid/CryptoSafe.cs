@@ -23,15 +23,11 @@ namespace CryptoSafeAndroid
         AdaptadorPersonalizado adaptador;
         EditText campoContrasena;
 
-        int indice = 0;
-
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            string tag = "CryptoSafe";
+            Android.Util.Log.Info(tag, "Plantilla de log: "+ this.PackageName+"|"+this.Class);
 
-
-            string tag = "myApp";
-
-            Android.Util.Log.Info(tag, "Esto es Sparta "+ this.PackageName+"|"+this.Class);
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
@@ -46,21 +42,10 @@ namespace CryptoSafeAndroid
 
             botonCifrar.Click += BotonCifrar_Click;
             botonDescifrar.Click += BotonDescifrar_Click;
-            /*
-            try
+            if (Intent.Action == Intent.ActionSend)
             {
-                if (Intent.Action == Intent.ActionSend)
-                {
-                    Toast.MakeText(this, "Holi", ToastLength.Long).Show();
-                    ClipData.Item value = Intent.ClipData.GetItemAt(0);
-                }
+                ClipData.Item value = Intent.ClipData.GetItemAt(0);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Toast.MakeText(this, e.Message, ToastLength.Long).Show();
-            }*/
-            
         }
 
         protected override void OnNewIntent(Intent intent)
