@@ -11,6 +11,7 @@ using System;
 using AlertDialog = Android.App.AlertDialog;
 using Android.Content;
 using Android.Util;
+using Android.Provider;
 
 namespace CryptoSafeAndroid
 {
@@ -23,41 +24,48 @@ namespace CryptoSafeAndroid
         ListView listaArchivosSeleccionados;
         AdaptadorPersonalizado adaptador;
         EditText campoContrasena;
+        Button botonCifrar;
+        Button botonDescifrar;
         const string tag = "CryptoSafe";
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            Log.Info(tag, "Plantilla de log: "+ this.PackageName+"|"+this.Class);
-
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
+            InicializarComponentesInterfaz();
 
-            listaArchivosSeleccionados = FindViewById<ListView>(Resource.Id.listViewArchivos);
-            campoContrasena = FindViewById<EditText>(Resource.Id.campoContrasena);
+
 
             adaptador = new AdaptadorPersonalizado(ArchivosData.Archivos);
             listaArchivosSeleccionados.Adapter = adaptador;
 
-            Button botonCifrar = FindViewById<Button>(Resource.Id.botonCifrar);
-            Button botonDescifrar = FindViewById<Button>(Resource.Id.botonDescifrar);
-
-            botonCifrar.Click += BotonCifrar_Click;
-            botonDescifrar.Click += BotonDescifrar_Click;
             if (Intent.Action == Intent.ActionSend)
             {
-                ClipData.Item value = Intent.ClipData.GetItemAt(0);
-                Toast.MakeText(this, "Este es el IF del intent", ToastLength.Long).Show();
-                Log.Info(tag, "Este es el IF del intent");
+                var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
+                Toast.MakeText(this, rutaArchivo, ToastLength.Long).Show();
+                AgregarArchivoALista(rutaArchivo);   
+            }
+            else if(Intent.Action == Intent.ActionSendMultiple)
+            {
+                //if (Intent.Type.StartsWith("image/"))
+                //Toast.MakeText(this, "¡Esto es una imágen!", ToastLength.Long).Show();
+                //ClipData.Item value = Intent.ClipData.GetItemAt(0);
+                //intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)?.let {
+                var rutasArchivos = Intent.GetParcelableArrayListExtra(Intent.ExtraStream);
             }
         }
 
-        protected override void OnNewIntent(Intent intent)
+        private string ObtenerRutaArchivo(Android.Net.Uri uri)
         {
-            Toast.MakeText(this, "Este es un nuevo intent", ToastLength.Long).Show();
-            Log.Info(tag, "Este es un nuevo intent");
+            string[] proj = { MediaStore.Images.ImageColumns.Data };
+            var cursor = ManagedQuery(uri, proj, null, null, null);
+            var colIndex = cursor.GetColumnIndex(MediaStore.Images.ImageColumns.Data);
+            cursor.MoveToFirst();
+            return cursor.GetString(colIndex);
         }
 
-            private void BotonDescifrar_Click(object sender, EventArgs e)
+
+        private void BotonDescifrar_Click(object sender, EventArgs e)
         {
             string contrasena = campoContrasena.Text;
             byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
@@ -71,7 +79,6 @@ namespace CryptoSafeAndroid
             byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
             var eliminarArchivos = false; //Temporal
             CifrarArchivos(keyMaterial, eliminarArchivos);
-            //Toast.MakeText(this, "Ya le di en CIFRAR", ToastLength.Short).Show();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -80,6 +87,18 @@ namespace CryptoSafeAndroid
             inflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
+
+        private void AgregarArchivoALista(string ruta)
+        {
+            FileInfo informacion = new FileInfo(ruta);
+            adaptador.AgregarArchivoALista(new Archivo
+            {
+                Nombre = Path.GetFullPath(ruta),
+                Extension = Path.GetExtension(ruta),
+                Tamano = (informacion.Length / 1024) + " KB"
+            });
+        }
+
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
@@ -91,14 +110,6 @@ namespace CryptoSafeAndroid
             }
             else if (id == Resource.Id.addFiles)
             {
-                StartActivity(typeof(ExploradorArchivos));
-                /*adaptador.AgregarArchivoALista(new Archivo
-                {
-                    Nombre = "Archivo"+indice,
-                    Extension = "zip",
-                    Tamano = "4020.KB"
-                });
-                indice++;*/
             }
             return base.OnOptionsItemSelected(item);
         }
@@ -110,7 +121,7 @@ namespace CryptoSafeAndroid
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
-                    //Toast.MakeText(this, rutaDestino, ToastLength.Long).Show();
+                    Log.Debug(tag, rutaDestino);
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
                 }
                 catch (System.Security.Cryptography.CryptographicException)
@@ -134,6 +145,10 @@ namespace CryptoSafeAndroid
                     mensajeInformacion.SetTitle("Error al cifrar");
                     mensajeInformacion.SetMessage("El directorio destino '" + Path.GetDirectoryName(archivo.Nombre) + "' no pudo ser encontrado");
                     mensajeInformacion.Show();
+                }
+                catch (Exception e)
+                {
+                    Log.Warn(tag, "excepción D: " + e.Message);
                 }
             }
         }
@@ -173,6 +188,18 @@ namespace CryptoSafeAndroid
                     mensajeInformacion.Show();
                 }
             }
+        }
+
+        private void InicializarComponentesInterfaz()
+        {
+            listaArchivosSeleccionados = FindViewById<ListView>(Resource.Id.listViewArchivos);
+            campoContrasena = FindViewById<EditText>(Resource.Id.campoContrasena);
+
+            botonCifrar = FindViewById<Button>(Resource.Id.botonCifrar);
+            botonCifrar.Click += BotonCifrar_Click;
+
+            botonDescifrar = FindViewById<Button>(Resource.Id.botonDescifrar);
+            botonDescifrar.Click += BotonDescifrar_Click;
         }
     }
 }
