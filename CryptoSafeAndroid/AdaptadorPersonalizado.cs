@@ -70,5 +70,11 @@ namespace CryptoSafeAndroid
             archivos.Add(archivo);
             this.NotifyDataSetChanged();
         }
+
+        public void LimpiarLista()
+        {
+            archivos.Clear();
+            this.NotifyDataSetChanged();
+        }
     }
 }

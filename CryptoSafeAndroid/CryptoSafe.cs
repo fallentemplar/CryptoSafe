@@ -26,7 +26,7 @@ namespace CryptoSafeAndroid
         EditText campoContrasena;
         Button botonCifrar;
         Button botonDescifrar;
-        const string tag = "CryptoSafe";
+        const string tag = "MyApp";
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -34,13 +34,14 @@ namespace CryptoSafeAndroid
             SetContentView(Resource.Layout.activity_main);
             InicializarComponentesInterfaz();
 
-
-
             adaptador = new AdaptadorPersonalizado(ArchivosData.Archivos);
             listaArchivosSeleccionados.Adapter = adaptador;
 
+            Toast.MakeText(this, "Versión 1.0.0.0", ToastLength.Long).Show();
+
             if (Intent.Action == Intent.ActionSend)
             {
+                adaptador.LimpiarLista();
                 var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
                 Toast.MakeText(this, rutaArchivo, ToastLength.Long).Show();
                 AgregarArchivoALista(rutaArchivo);   
@@ -65,20 +66,40 @@ namespace CryptoSafeAndroid
         }
 
 
-        private void BotonDescifrar_Click(object sender, EventArgs e)
+        private async void BotonDescifrar_Click(object sender, EventArgs e)
         {
-            string contrasena = campoContrasena.Text;
-            byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
-            var eliminarArchivos = false; //Temporal
-            DescifrarArchivos(keyMaterial, eliminarArchivos);
+            Log.Info(tag, "Botón de descifrar presionado");
+            if (adaptador.archivos.Count > 0)
+            {
+                string contrasena = campoContrasena.Text;
+                Log.Debug(tag, "Contraseña: " + contrasena);
+                byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+                var eliminarArchivos = false; //Temporal
+                await DescifrarArchivos(keyMaterial, eliminarArchivos);
+                Toast.MakeText(this, "Tarea de descifrado terminada", ToastLength.Long).Show();
+                Log.Debug(tag, "Tarea de descifrado terminada");
+            }
+            else
+                Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
+            adaptador.LimpiarLista();
         }
 
-        private void BotonCifrar_Click(object sender, System.EventArgs e)
+        private async void BotonCifrar_Click(object sender, System.EventArgs e)
         {
-            string contrasena = campoContrasena.Text;
-            byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
-            var eliminarArchivos = false; //Temporal
-            CifrarArchivos(keyMaterial, eliminarArchivos);
+            Log.Info(tag, "Botón de cifrar presionado");
+            if (adaptador.archivos.Count > 0)
+            {
+                string contrasena = campoContrasena.Text;
+                Log.Debug(tag, "Contraseña: " + contrasena);
+                byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+                var eliminarArchivos = false; //Temporal
+                await CifrarArchivos(keyMaterial, eliminarArchivos);
+                Toast.MakeText(this, "Tarea de cifrado terminada", ToastLength.Long).Show();
+                Log.Debug(tag, "Tarea de cifrado terminada");
+            }
+            else
+                Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
+            adaptador.LimpiarLista();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -95,7 +116,7 @@ namespace CryptoSafeAndroid
             {
                 Nombre = Path.GetFullPath(ruta),
                 Extension = Path.GetExtension(ruta),
-                Tamano = (informacion.Length / 1024) + " KB"
+                Tamano = (informacion.Length / 1024) + "KB"
             });
         }
 
@@ -108,8 +129,12 @@ namespace CryptoSafeAndroid
                 Toast.MakeText(this, "Compartir\nNo implementado", ToastLength.Short).Show();
                 return true;
             }
-            else if (id == Resource.Id.addFiles)
+            else if (id == Resource.Id.removeFiles)
             {
+                if(adaptador.archivos.Count>0)
+                    adaptador.LimpiarLista();
+                else
+                    Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
             }
             return base.OnOptionsItemSelected(item);
         }
@@ -160,6 +185,7 @@ namespace CryptoSafeAndroid
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
+                    Log.Debug(tag, "Ruta destino: " + rutaDestino);
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, false);
                     //if (eliminarArchivos)
                     //Archivos.EliminarArchivo(archivo.ToString());

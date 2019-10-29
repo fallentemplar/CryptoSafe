@@ -2413,9 +2413,6 @@ namespace CryptoSafeAndroid
 			// aapt resource value: 0x7f08002b
 			public const int add = 2131230763;
 			
-			// aapt resource value: 0x7f0800b6
-			public const int addFiles = 2131230902;
-			
 			// aapt resource value: 0x7f08006f
 			public const int alertTitle = 2131230831;
 			
@@ -2676,6 +2673,9 @@ namespace CryptoSafeAndroid
 			
 			// aapt resource value: 0x7f080074
 			public const int radio = 2131230836;
+			
+			// aapt resource value: 0x7f0800b6
+			public const int removeFiles = 2131230902;
 			
 			// aapt resource value: 0x7f080049
 			public const int right = 2131230793;
@@ -3284,6 +3284,9 @@ namespace CryptoSafeAndroid
 			
 			// aapt resource value: 0x7f09002f
 			public const int action_email = 2131296303;
+			
+			// aapt resource value: 0x7f090031
+			public const int action_remove = 2131296305;
 			
 			// aapt resource value: 0x7f09002e
 			public const int action_search = 2131296302;

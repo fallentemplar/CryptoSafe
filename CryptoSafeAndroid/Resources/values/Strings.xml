@@ -5,4 +5,5 @@
   <string name="action_search">Buscar</string>
   <string name="action_email">Enviar por Email</string>
   <string name="action_add">Agregar archivos</string>
+  <string name="action_remove">Eliminar archivos</string>
 </resources>

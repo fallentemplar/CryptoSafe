@@ -6,10 +6,10 @@
   tools:context=".MainActivity"
   >
   <item
-    android:id="@+id/addFiles"
+    android:id="@+id/removeFiles"
     android:icon="@drawable/add"
     crypt:showAsAction="always"
-    android:title="@string/action_add"
+    android:title="@string/action_remove"
     />
   <item
     android:id="@+id/share"
