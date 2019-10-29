@@ -56,6 +56,11 @@ namespace CryptoSafeAndroid
             }
         }
 
+        private bool ConfirmarEliminacionArchivos()
+        {
+            return false;
+        }
+
         private string ObtenerRutaArchivo(Android.Net.Uri uri)
         {
             string[] proj = { MediaStore.Images.ImageColumns.Data };
@@ -64,7 +69,6 @@ namespace CryptoSafeAndroid
             cursor.MoveToFirst();
             return cursor.GetString(colIndex);
         }
-
 
         private async void BotonDescifrar_Click(object sender, EventArgs e)
         {
@@ -112,7 +116,7 @@ namespace CryptoSafeAndroid
         private void AgregarArchivoALista(string ruta)
         {
             FileInfo informacion = new FileInfo(ruta);
-            adaptador.AgregarArchivoALista(new Archivo
+            adaptador.AgregarArchivo(new Archivo
             {
                 Nombre = Path.GetFullPath(ruta),
                 Extension = Path.GetExtension(ruta),

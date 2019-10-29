@@ -65,7 +65,7 @@ namespace CryptoSafeAndroid
             return vista;
         }
 
-        public void AgregarArchivoALista(Archivo archivo)
+        public void AgregarArchivo(Archivo archivo)
         {
             archivos.Add(archivo);
             this.NotifyDataSetChanged();
