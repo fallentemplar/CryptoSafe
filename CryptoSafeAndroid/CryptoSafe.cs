@@ -12,6 +12,7 @@ using AlertDialog = Android.App.AlertDialog;
 using Android.Content;
 using Android.Util;
 using Android.Provider;
+using Xamarin.Android;
 
 namespace CryptoSafeAndroid
 {
@@ -56,10 +57,22 @@ namespace CryptoSafeAndroid
             }
         }
 
-        private bool ConfirmarEliminacionArchivos()
+        private Task<bool> ConfirmarEliminacionArchivos()
         {
-            return false;
+            var respuesta = new TaskCompletionSource<bool>();
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            AlertDialog alert = dialog.Create();
+            alert.SetTitle("Confirmación");
+            alert.SetMessage("¿Desea eliminar los archivos originales después del proceso?");
+            alert.SetButton("Sí", (c, ev) =>
+            {
+                respuesta.SetResult(true);
+            });
+            alert.SetButton2("No", (c, ev) => { respuesta.SetResult(false); });
+            alert.Show();
+            return respuesta.Task;
         }
+
 
         private string ObtenerRutaArchivo(Android.Net.Uri uri)
         {
@@ -78,8 +91,8 @@ namespace CryptoSafeAndroid
                 string contrasena = campoContrasena.Text;
                 Log.Debug(tag, "Contraseña: " + contrasena);
                 byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
-                var eliminarArchivos = false; //Temporal
-                await DescifrarArchivos(keyMaterial, eliminarArchivos);
+                bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
+                await DescifrarArchivos(keyMaterial, eliminarArchivosOriginales);
                 Toast.MakeText(this, "Tarea de descifrado terminada", ToastLength.Long).Show();
                 Log.Debug(tag, "Tarea de descifrado terminada");
             }
@@ -96,8 +109,9 @@ namespace CryptoSafeAndroid
                 string contrasena = campoContrasena.Text;
                 Log.Debug(tag, "Contraseña: " + contrasena);
                 byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
-                var eliminarArchivos = false; //Temporal
-                await CifrarArchivos(keyMaterial, eliminarArchivos);
+                bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
+                Toast.MakeText(this, "Eliminar: "+eliminarArchivosOriginales, ToastLength.Long).Show();
+                await CifrarArchivos(keyMaterial, eliminarArchivosOriginales);
                 Toast.MakeText(this, "Tarea de cifrado terminada", ToastLength.Long).Show();
                 Log.Debug(tag, "Tarea de cifrado terminada");
             }
