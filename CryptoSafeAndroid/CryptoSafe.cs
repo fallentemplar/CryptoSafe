@@ -13,6 +13,8 @@ using Android.Content;
 using Android.Util;
 using Android.Provider;
 using Xamarin.Android;
+using System.Linq;
+using Java.Net;
 
 namespace CryptoSafeAndroid
 {
@@ -44,16 +46,17 @@ namespace CryptoSafeAndroid
             {
                 adaptador.LimpiarLista();
                 var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
-                Toast.MakeText(this, rutaArchivo, ToastLength.Long).Show();
+                Toast.MakeText(this, "Agregado: " + rutaArchivo, ToastLength.Long).Show();
                 AgregarArchivoALista(rutaArchivo);   
             }
             else if(Intent.Action == Intent.ActionSendMultiple)
             {
-                //if (Intent.Type.StartsWith("image/"))
-                //Toast.MakeText(this, "¡Esto es una imágen!", ToastLength.Long).Show();
-                //ClipData.Item value = Intent.ClipData.GetItemAt(0);
-                //intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)?.let {
-                var rutasArchivos = Intent.GetParcelableArrayListExtra(Intent.ExtraStream);
+                for (int i = 0; i < Intent.ClipData.ItemCount; i++)
+                {
+                    var rutaArchivo = ObtenerRutaArchivo(Intent.ClipData.GetItemAt(i).Uri);
+                    Toast.MakeText(this, "Agregado: " + rutaArchivo, ToastLength.Long).Show();
+                    AgregarArchivoALista(rutaArchivo);
+                }
             }
         }
 
@@ -89,7 +92,6 @@ namespace CryptoSafeAndroid
             if (adaptador.archivos.Count > 0)
             {
                 string contrasena = campoContrasena.Text;
-                Log.Debug(tag, "Contraseña: " + contrasena);
                 byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
                 bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
                 await DescifrarArchivos(keyMaterial, eliminarArchivosOriginales);
@@ -107,10 +109,8 @@ namespace CryptoSafeAndroid
             if (adaptador.archivos.Count > 0)
             {
                 string contrasena = campoContrasena.Text;
-                Log.Debug(tag, "Contraseña: " + contrasena);
                 byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
                 bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
-                Toast.MakeText(this, "Eliminar: "+eliminarArchivosOriginales, ToastLength.Long).Show();
                 await CifrarArchivos(keyMaterial, eliminarArchivosOriginales);
                 Toast.MakeText(this, "Tarea de cifrado terminada", ToastLength.Long).Show();
                 Log.Debug(tag, "Tarea de cifrado terminada");
@@ -166,6 +166,13 @@ namespace CryptoSafeAndroid
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
                     Log.Debug(tag, rutaDestino);
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
+                    if (eliminarArchivos)
+                    {
+                        Log.Debug(tag, "Voy a eliminar archivos");
+                        File.Delete(archivo.Nombre);
+                        Log.Debug(tag, "Ya eliminé archivos");
+                    }
+                        
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
@@ -205,8 +212,12 @@ namespace CryptoSafeAndroid
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
                     Log.Debug(tag, "Ruta destino: " + rutaDestino);
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, false);
-                    //if (eliminarArchivos)
-                    //Archivos.EliminarArchivo(archivo.ToString());
+                    if (eliminarArchivos)
+                    {
+                        Log.Debug(tag, "Voy a eliminar archivos");
+                        File.Delete(archivo.Nombre);
+                        Log.Debug(tag, "Ya eliminé archivos");
+                    }
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
