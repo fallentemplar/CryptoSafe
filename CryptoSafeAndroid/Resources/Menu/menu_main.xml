@@ -7,13 +7,14 @@
   >
   <item
     android:id="@+id/removeFiles"
-    android:icon="@drawable/add"
+    android:icon="@drawable/file_remove"
     crypt:showAsAction="always"
     android:title="@string/action_remove"
     />
   <item
     android:id="@+id/share"
-    android:icon="@android:drawable/ic_menu_share"
+    android:actionProviderClass="android.widget.ShareActionProvider"
+    android:icon="@drawable/share_variant"
     crypt:showAsAction="always"
     android:title="@string/action_share"
     />

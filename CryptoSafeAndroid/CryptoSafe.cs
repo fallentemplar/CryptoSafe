@@ -34,6 +34,8 @@ namespace CryptoSafeAndroid
             Manifest.Permission.WriteExternalStorage
         };
 
+        List<string> archivosProcesados = new List<string>();
+
         ListView listaArchivosSeleccionados;
         AdaptadorPersonalizado adaptador;
         EditText campoContrasena;
@@ -54,21 +56,40 @@ namespace CryptoSafeAndroid
             adaptador = new AdaptadorPersonalizado(ArchivosData.Archivos);
             listaArchivosSeleccionados.Adapter = adaptador;
 
-            if (Intent.Action == Intent.ActionSend)
+            try
             {
-                adaptador.LimpiarLista();
-                var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
-                AgregarArchivoALista(rutaArchivo);
-            }
-            else if (Intent.Action == Intent.ActionSendMultiple)
-            {
-                adaptador.LimpiarLista();
-                for (int i = 0; i < Intent.ClipData.ItemCount; i++)
+                Log.Debug(tag, "1");
+                if (Intent.Action == Intent.ActionSend)
                 {
-                    var rutaArchivo = ObtenerRutaArchivo(Intent.ClipData.GetItemAt(i).Uri);
+                    Log.Debug(tag, "2");
+                    adaptador.LimpiarLista();
+                    Log.Debug(tag, "3");
+                    var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
+                    Log.Debug(tag, "4");
                     AgregarArchivoALista(rutaArchivo);
+                    Log.Debug(tag, "5");
+                }
+                else if (Intent.Action == Intent.ActionSendMultiple)
+                {
+                    Log.Debug(tag, "6");
+                    adaptador.LimpiarLista();
+                    Log.Debug(tag, "7");
+                    for (int i = 0; i < Intent.ClipData.ItemCount; i++)
+                    {
+                        Log.Debug(tag, "8-"+i.ToString());
+                        var rutaArchivo = ObtenerRutaArchivo(Intent.ClipData.GetItemAt(i).Uri);
+                        Log.Debug(tag, "9");
+                        AgregarArchivoALista(rutaArchivo);
+                        Log.Debug(tag, "10");
+                    }
                 }
             }
+            catch(Exception e)
+            {
+                Log.Debug(tag, e.GetType()+"|||"+e.Message + "|||" + e.Source);
+                
+            }
+            
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
@@ -99,7 +120,6 @@ namespace CryptoSafeAndroid
             alert.Show();
             return respuesta.Task;
         }
-
 
         private string ObtenerRutaArchivo(Android.Net.Uri uri)
         {
@@ -183,7 +203,14 @@ namespace CryptoSafeAndroid
             int id = item.ItemId;
             if (id == Resource.Id.share)
             {
-                Toast.MakeText(this, "Compartir\nNo implementado", ToastLength.Short).Show();
+                Intent sharingIntent = new Intent(Intent.ActionSend);
+                sharingIntent.SetType("application/unknown");
+                foreach (var archivo in archivosProcesados)
+                {
+                    Android.Net.Uri uri = (Android.Net.Uri)archivo;
+                    sharingIntent.PutExtra(Intent.ExtraStream, uri);
+                }
+                StartActivity(Intent.CreateChooser(sharingIntent, "Compartir con..."));
                 return true;
             }
             else if (id == Resource.Id.removeFiles)
@@ -209,6 +236,7 @@ namespace CryptoSafeAndroid
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
                     if (eliminarArchivos)
                         File.Delete(archivo.Nombre);
+                    archivosProcesados.Add(rutaDestino);
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
