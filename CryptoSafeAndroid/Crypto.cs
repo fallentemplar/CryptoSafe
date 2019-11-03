@@ -87,23 +87,15 @@ namespace CryptoSafeAndroid
             var claveDerivada = aesGcm.CreateSymmetricKey(keyMaterial);
             try
             {
-                if (cifrar)
-                {
-                    var cifrador = new PCLCrypto.ICryptoTransform[] { WinRTCrypto.CryptographicEngine.CreateEncryptor(claveDerivada) };
-                    await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, cifrador);
-                }
-                else
-                {
-                    var descifrador = new PCLCrypto.ICryptoTransform[] { WinRTCrypto.CryptographicEngine.CreateDecryptor(claveDerivada) };
-                    await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, descifrador);
-                }
+                var mecanismoCriptografico = cifrar ? WinRTCrypto.CryptographicEngine.CreateEncryptor(claveDerivada) : WinRTCrypto.CryptographicEngine.CreateDecryptor(claveDerivada);
+                var transformacion = new PCLCrypto.ICryptoTransform[] { mecanismoCriptografico };
+                await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, transformacion);
             }
             catch
             {
                 throw;
             }
         }
-
         public static async Task CryptoTransformFileAsync(string rutaOrigen, string rutaDestino, PCLCrypto.ICryptoTransform[] transformaciones, CancellationToken tokenDeCancelacion = default)
         {
             const int TamanoBuffer = 4096;

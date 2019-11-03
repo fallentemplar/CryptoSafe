@@ -58,15 +58,14 @@ namespace CryptoSafeAndroid
             {
                 adaptador.LimpiarLista();
                 var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
-                Toast.MakeText(this, "Agregado: " + rutaArchivo, ToastLength.Long).Show();
                 AgregarArchivoALista(rutaArchivo);
             }
             else if (Intent.Action == Intent.ActionSendMultiple)
             {
+                adaptador.LimpiarLista();
                 for (int i = 0; i < Intent.ClipData.ItemCount; i++)
                 {
                     var rutaArchivo = ObtenerRutaArchivo(Intent.ClipData.GetItemAt(i).Uri);
-                    Toast.MakeText(this, "Agregado: " + rutaArchivo, ToastLength.Long).Show();
                     AgregarArchivoALista(rutaArchivo);
                 }
             }
@@ -113,8 +112,11 @@ namespace CryptoSafeAndroid
 
         private async void BotonDescifrar_Click(object sender, EventArgs e)
         {
-            Log.Info(tag, "Botón de descifrar presionado");
-            if (adaptador.archivos.Count > 0)
+            if (campoContrasena.Text.Length < 8)
+            {
+                Toast.MakeText(this, "La contraseña debe tener una longitud mínima de 8 caracteres", ToastLength.Long).Show();
+            }
+            else if (adaptador.archivos.Count > 0)
             {
                 if (ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[0]) == (int)Permission.Granted && ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[1]) == (int)Permission.Granted)
                 {
@@ -122,37 +124,40 @@ namespace CryptoSafeAndroid
                     byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
                     bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
                     await DescifrarArchivos(keyMaterial, eliminarArchivosOriginales);
-                    Toast.MakeText(this, "Tarea de descifrado terminada", ToastLength.Long).Show();
+                    Toast.MakeText(this, "Tarea completada", ToastLength.Long).Show();
                     adaptador.LimpiarLista();
+                    campoContrasena.Text = "";
                 }
                 else if (ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[0]) || ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[1]))
                     ActivityCompat.RequestPermissions(this, PermisosAlmacenamiento, 0);
             }
             else
                 Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
-            
         }
 
         private async void BotonCifrar_Click(object sender, System.EventArgs e)
         {
-            Log.Info(tag, "Botón de cifrar presionado");
-            if (adaptador.archivos.Count > 0)
+            if (campoContrasena.Text.Length < 8)
             {
-
+                Toast.MakeText(this, "La contraseña debe tener una longitud mínima de 8 caracteres", ToastLength.Long).Show();
+            }
+            else if (adaptador.archivos.Count > 0)
+            {
                 if (ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[0]) == (int)Permission.Granted && ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[1]) == (int)Permission.Granted)
                 {
                     string contrasena = campoContrasena.Text;
                     byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
                     bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
                     await CifrarArchivos(keyMaterial, eliminarArchivosOriginales);
-                    Toast.MakeText(this, "Tarea de cifrado terminada", ToastLength.Long).Show();
+                    Toast.MakeText(this, "Tarea completada", ToastLength.Long).Show();
                     adaptador.LimpiarLista();
+                    campoContrasena.Text = "";
                 }
                 else if (ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[0]) || ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[1]))
                     ActivityCompat.RequestPermissions(this, PermisosAlmacenamiento, 0);
             }
             else
-                Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
+                Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Long).Show();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -161,8 +166,6 @@ namespace CryptoSafeAndroid
             inflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
-
-        
 
         private void AgregarArchivoALista(string ruta)
         {
@@ -174,7 +177,6 @@ namespace CryptoSafeAndroid
                 Tamano = (informacion.Length / 1024) + "KB"
             });
         }
-
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
@@ -196,41 +198,42 @@ namespace CryptoSafeAndroid
 
         private async Task CifrarArchivos(byte[] keyMaterial, bool eliminarArchivos)
         {
+            AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+            mensajeInformacion.SetTitle("Error al cifrar");
             foreach (var archivo in adaptador.archivos)
             {
+                string rutaDestino;
                 try
                 {
-                    string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
+                    rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
                     if (eliminarArchivos)
                         File.Delete(archivo.Nombre);
-                        
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
-                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
-                    mensajeInformacion.SetTitle("Error al cifrar");
                     mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado");
                     mensajeInformacion.Show();
                 }
                 catch (FileNotFoundException)
                 {
-                    //Toast.MakeText(this, "El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado", ToastLength.Long).Show();
-                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
-                    mensajeInformacion.SetTitle("Error al cifrar");
                     mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado");
                     mensajeInformacion.Show();
                 }
                 catch (DirectoryNotFoundException)
                 {
-                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
-                    mensajeInformacion.SetTitle("Error al cifrar");
                     mensajeInformacion.SetMessage("El directorio destino '" + Path.GetDirectoryName(archivo.Nombre) + "' no pudo ser encontrado");
                     mensajeInformacion.Show();
                 }
-                catch (Exception e)
+                catch (Javax.Crypto.IllegalBlockSizeException)
                 {
-                    Log.Warn(tag, "excepción D: " + e.Message);
+                    mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado. La contraseña es incorrecta");
+                    mensajeInformacion.Show();
+                }
+                catch (Exception)
+                {
+                    mensajeInformacion.SetMessage("Error desconocido");
+                    mensajeInformacion.Show();
                 }
             }
         }
@@ -239,35 +242,45 @@ namespace CryptoSafeAndroid
         {
             foreach (var archivo in adaptador.archivos)
             {
+                string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
+
+                AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
+                mensajeInformacion.SetTitle("Error al descifrar");
                 try
-                {
-                    string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
+                {    
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, false);
                     if (eliminarArchivos)
                         File.Delete(archivo.Nombre);
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
-                    //Archivos.EliminarArchivo(Path.Combine(Path.GetDirectoryName(archivo), Path.GetFileNameWithoutExtension(archivo)));
-                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
-                    mensajeInformacion.SetTitle("Error al descifrar");
-                    mensajeInformacion.SetMessage("Esto puede deberse a una de las siguientes razones:\n1-El archivo está dañado\n2-La contraseña es incorrecta\n3-El archivo no fue cifrado con CryptoSafe");
+                    mensajeInformacion.SetMessage("Esto puede deberse a una de las siguientes razones:\n1-El archivo está dañado\n2-El archivo no fue cifrado con CryptoSafe");
                     mensajeInformacion.Show();
+                    File.Delete(rutaDestino);
                 }
                 catch (FileNotFoundException)
                 {
-                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
-                    mensajeInformacion.SetTitle("Error al descifrar");
                     mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser encontrado");
                     mensajeInformacion.Show();
+                    File.Delete(rutaDestino);
                 }
                 catch(DirectoryNotFoundException)
                 {
-                    AlertDialog.Builder mensajeInformacion = new AlertDialog.Builder(this);
-                    mensajeInformacion.SetTitle("Error al descifrar");
-                    mensajeInformacion.SetMessage("El directorio destino '" + Path.GetDirectoryName(archivo.Nombre) + "' no pudo ser encontrado");
-                    
+                    mensajeInformacion.SetMessage("El directorio destino '" + Path.GetDirectoryName(archivo.Nombre) + "' no pudo ser encontrado");   
                     mensajeInformacion.Show();
+                    File.Delete(rutaDestino);
+                }
+                catch (Javax.Crypto.IllegalBlockSizeException)
+                {
+                    mensajeInformacion.SetMessage("El archivo " + Path.GetFileName(archivo.Nombre) + " no pudo ser cifrado. La contraseña es incorrecta");
+                    mensajeInformacion.Show();
+                    File.Delete(rutaDestino);
+                }
+                catch (Exception)
+                {
+                    mensajeInformacion.SetMessage("Error desconocido");
+                    mensajeInformacion.Show();
+                    File.Delete(rutaDestino);
                 }
             }
         }
