@@ -58,38 +58,26 @@ namespace CryptoSafeAndroid
 
             try
             {
-                Log.Debug(tag, "1");
                 if (Intent.Action == Intent.ActionSend)
                 {
-                    Log.Debug(tag, "2");
                     adaptador.LimpiarLista();
-                    Log.Debug(tag, "3");
                     var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
-                    Log.Debug(tag, "4");
                     AgregarArchivoALista(rutaArchivo);
-                    Log.Debug(tag, "5");
                 }
                 else if (Intent.Action == Intent.ActionSendMultiple)
                 {
-                    Log.Debug(tag, "6");
                     adaptador.LimpiarLista();
-                    Log.Debug(tag, "7");
                     for (int i = 0; i < Intent.ClipData.ItemCount; i++)
                     {
-                        Log.Debug(tag, "8-"+i.ToString());
                         var rutaArchivo = ObtenerRutaArchivo(Intent.ClipData.GetItemAt(i).Uri);
-                        Log.Debug(tag, "9");
                         AgregarArchivoALista(rutaArchivo);
-                        Log.Debug(tag, "10");
                     }
                 }
             }
             catch(Exception e)
             {
                 Log.Debug(tag, e.GetType()+"|||"+e.Message + "|||" + e.Source);
-                
             }
-            
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
@@ -282,7 +270,7 @@ namespace CryptoSafeAndroid
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {
-                    mensajeInformacion.SetMessage("Esto puede deberse a una de las siguientes razones:\n1-El archivo está dañado\n2-El archivo no fue cifrado con CryptoSafe");
+                    mensajeInformacion.SetMessage("Esto puede deberse a una de las siguientes razones:\n1-El archivo está dañado\n2-El archivo no fue cifrado con Encrypto");
                     mensajeInformacion.Show();
                     File.Delete(rutaDestino);
                 }
