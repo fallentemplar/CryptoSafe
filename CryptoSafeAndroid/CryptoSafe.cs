@@ -15,6 +15,11 @@ using Android.Provider;
 using Xamarin.Android;
 using System.Linq;
 using Java.Net;
+using Android;
+using Android.Content.PM;
+using Android.Support.Design.Widget;
+using Android.Support.V4.Content;
+using Android.Support.V4.App;
 
 namespace CryptoSafeAndroid
 {
@@ -23,13 +28,21 @@ namespace CryptoSafeAndroid
     //[IntentFilter(new string[] { Intent.ActionSendMultiple },Categories = new string[] { Intent.CategoryDefault },DataMimeType = "image/*")]
     public class CryptoSafe : AppCompatActivity
     {
-        
+        readonly string[] PermisosAlmacenamiento =
+        {
+            Manifest.Permission.ReadExternalStorage,
+            Manifest.Permission.WriteExternalStorage
+        };
+
         ListView listaArchivosSeleccionados;
         AdaptadorPersonalizado adaptador;
         EditText campoContrasena;
         Button botonCifrar;
         Button botonDescifrar;
+
+        AlertDialog.Builder dialog;
         const string tag = "MyApp";
+
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -37,19 +50,18 @@ namespace CryptoSafeAndroid
             SetContentView(Resource.Layout.activity_main);
             InicializarComponentesInterfaz();
 
+            dialog = new AlertDialog.Builder(this);
             adaptador = new AdaptadorPersonalizado(ArchivosData.Archivos);
             listaArchivosSeleccionados.Adapter = adaptador;
-
-            Toast.MakeText(this, "Versión 1.0.0.0", ToastLength.Long).Show();
 
             if (Intent.Action == Intent.ActionSend)
             {
                 adaptador.LimpiarLista();
                 var rutaArchivo = ObtenerRutaArchivo((Android.Net.Uri)Intent.Extras.GetParcelable(Intent.ExtraStream));
                 Toast.MakeText(this, "Agregado: " + rutaArchivo, ToastLength.Long).Show();
-                AgregarArchivoALista(rutaArchivo);   
+                AgregarArchivoALista(rutaArchivo);
             }
-            else if(Intent.Action == Intent.ActionSendMultiple)
+            else if (Intent.Action == Intent.ActionSendMultiple)
             {
                 for (int i = 0; i < Intent.ClipData.ItemCount; i++)
                 {
@@ -60,10 +72,23 @@ namespace CryptoSafeAndroid
             }
         }
 
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        {
+            switch (requestCode)
+            {
+                case 0:
+                    if (grantResults[0] == Permission.Granted)
+                        Toast.MakeText(this, "Permisos concedidos\nVuelva a dar clic en el botón", ToastLength.Long).Show();
+                    else
+                        Toast.MakeText(this, "Permisos no concedidos.\nEncrypto no puede funcionar sin esos permisos", ToastLength.Long).Show();
+                    break;
+            }
+        }
+
         private Task<bool> ConfirmarEliminacionArchivos()
         {
             var respuesta = new TaskCompletionSource<bool>();
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            
             AlertDialog alert = dialog.Create();
             alert.SetTitle("Confirmación");
             alert.SetMessage("¿Desea eliminar los archivos originales después del proceso?");
@@ -91,16 +116,21 @@ namespace CryptoSafeAndroid
             Log.Info(tag, "Botón de descifrar presionado");
             if (adaptador.archivos.Count > 0)
             {
-                string contrasena = campoContrasena.Text;
-                byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
-                bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
-                await DescifrarArchivos(keyMaterial, eliminarArchivosOriginales);
-                Toast.MakeText(this, "Tarea de descifrado terminada", ToastLength.Long).Show();
-                Log.Debug(tag, "Tarea de descifrado terminada");
+                if (ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[0]) == (int)Permission.Granted && ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[1]) == (int)Permission.Granted)
+                {
+                    string contrasena = campoContrasena.Text;
+                    byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+                    bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
+                    await DescifrarArchivos(keyMaterial, eliminarArchivosOriginales);
+                    Toast.MakeText(this, "Tarea de descifrado terminada", ToastLength.Long).Show();
+                    adaptador.LimpiarLista();
+                }
+                else if (ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[0]) || ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[1]))
+                    ActivityCompat.RequestPermissions(this, PermisosAlmacenamiento, 0);
             }
             else
                 Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
-            adaptador.LimpiarLista();
+            
         }
 
         private async void BotonCifrar_Click(object sender, System.EventArgs e)
@@ -108,16 +138,21 @@ namespace CryptoSafeAndroid
             Log.Info(tag, "Botón de cifrar presionado");
             if (adaptador.archivos.Count > 0)
             {
-                string contrasena = campoContrasena.Text;
-                byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
-                bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
-                await CifrarArchivos(keyMaterial, eliminarArchivosOriginales);
-                Toast.MakeText(this, "Tarea de cifrado terminada", ToastLength.Long).Show();
-                Log.Debug(tag, "Tarea de cifrado terminada");
+
+                if (ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[0]) == (int)Permission.Granted && ContextCompat.CheckSelfPermission(this, PermisosAlmacenamiento[1]) == (int)Permission.Granted)
+                {
+                    string contrasena = campoContrasena.Text;
+                    byte[] keyMaterial = Crypto.DerivarClaveDeContrasena(contrasena, 256);
+                    bool eliminarArchivosOriginales = await ConfirmarEliminacionArchivos();
+                    await CifrarArchivos(keyMaterial, eliminarArchivosOriginales);
+                    Toast.MakeText(this, "Tarea de cifrado terminada", ToastLength.Long).Show();
+                    adaptador.LimpiarLista();
+                }
+                else if (ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[0]) || ActivityCompat.ShouldShowRequestPermissionRationale(this, PermisosAlmacenamiento[1]))
+                    ActivityCompat.RequestPermissions(this, PermisosAlmacenamiento, 0);
             }
             else
                 Toast.MakeText(this, "Actualmente no hay archivos en la lista", ToastLength.Short).Show();
-            adaptador.LimpiarLista();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -126,6 +161,8 @@ namespace CryptoSafeAndroid
             inflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
+
+        
 
         private void AgregarArchivoALista(string ruta)
         {
@@ -164,14 +201,9 @@ namespace CryptoSafeAndroid
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileName(archivo.Nombre)) + ".crypt";
-                    Log.Debug(tag, rutaDestino);
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, true);
                     if (eliminarArchivos)
-                    {
-                        Log.Debug(tag, "Voy a eliminar archivos");
                         File.Delete(archivo.Nombre);
-                        Log.Debug(tag, "Ya eliminé archivos");
-                    }
                         
                 }
                 catch (System.Security.Cryptography.CryptographicException)
@@ -210,14 +242,9 @@ namespace CryptoSafeAndroid
                 try
                 {
                     string rutaDestino = Path.Combine(Path.GetDirectoryName(archivo.Nombre), Path.GetFileNameWithoutExtension(archivo.Nombre));
-                    Log.Debug(tag, "Ruta destino: " + rutaDestino);
                     await Crypto.CifradoDescifradoAsincrono(keyMaterial, archivo.Nombre, rutaDestino, false);
                     if (eliminarArchivos)
-                    {
-                        Log.Debug(tag, "Voy a eliminar archivos");
                         File.Delete(archivo.Nombre);
-                        Log.Debug(tag, "Ya eliminé archivos");
-                    }
                 }
                 catch (System.Security.Cryptography.CryptographicException)
                 {

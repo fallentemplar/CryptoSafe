@@ -11,8 +11,6 @@ namespace CryptoSafeAndroid
 {
     class Crypto
     {
-
-
         const string tag = "MyApp";
      /// <summary>
      /// Deriva una clave para usar con algoritmos simétricos
@@ -91,13 +89,11 @@ namespace CryptoSafeAndroid
             {
                 if (cifrar)
                 {
-                    Log.Debug(tag,"Voy a cifrar");
                     var cifrador = new PCLCrypto.ICryptoTransform[] { WinRTCrypto.CryptographicEngine.CreateEncryptor(claveDerivada) };
                     await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, cifrador);
                 }
                 else
                 {
-                    Log.Debug(tag,"Voy a descifrar");
                     var descifrador = new PCLCrypto.ICryptoTransform[] { WinRTCrypto.CryptographicEngine.CreateDecryptor(claveDerivada) };
                     await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, descifrador);
                 }
@@ -110,9 +106,6 @@ namespace CryptoSafeAndroid
 
         public static async Task CryptoTransformFileAsync(string rutaOrigen, string rutaDestino, PCLCrypto.ICryptoTransform[] transformaciones, CancellationToken tokenDeCancelacion = default)
         {
-            Log.Debug(tag, "En método cifrador/descifrador");
-            Log.Debug(tag, "Origen: " + rutaOrigen);
-            Log.Debug(tag, "Destino: " + rutaDestino);
             const int TamanoBuffer = 4096;
             using (var streamOrigen = new FileStream(rutaOrigen, FileMode.Open, FileAccess.Read, FileShare.Read, TamanoBuffer, useAsync: true))
             {
@@ -126,7 +119,6 @@ namespace CryptoSafeAndroid
                     }
                 }
             }
-            Log.Debug(tag, "Terminé de cifrar a " + rutaDestino);
         }
     }
 }
