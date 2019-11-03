@@ -1,6 +1,6 @@
 ﻿namespace ProyectoCifrado3
 {
-    partial class CriptoSafe
+    partial class Encrypto
     {
         /// <summary>
         /// Variable del diseñador necesaria.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CriptoSafe));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Encrypto));
             this.boton_cifrar = new System.Windows.Forms.Button();
             this.campo_contrasena = new System.Windows.Forms.TextBox();
             this.etiqueta_contrasena = new System.Windows.Forms.Label();
@@ -129,11 +129,11 @@
             this.etiqueta_nombre.ForeColor = System.Drawing.Color.White;
             this.etiqueta_nombre.Location = new System.Drawing.Point(8, 9);
             this.etiqueta_nombre.Name = "etiqueta_nombre";
-            this.etiqueta_nombre.Size = new System.Drawing.Size(94, 21);
+            this.etiqueta_nombre.Size = new System.Drawing.Size(81, 21);
             this.etiqueta_nombre.TabIndex = 6;
-            this.etiqueta_nombre.Text = "CryptoSafe";
+            this.etiqueta_nombre.Text = "Encrypto";
             // 
-            // CriptoSafe
+            // Encrypto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -147,9 +147,9 @@
             this.Controls.Add(this.boton_cifrar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "CriptoSafe";
+            this.Name = "Encrypto";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "CryptoSafe";
+            this.Text = "Encrypto";
             this.ResumeLayout(false);
             this.PerformLayout();
 
