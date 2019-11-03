@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoCifrado3
 {
-    public partial class CriptoSafe : Form
+    public partial class Encrypto : Form
     {
         const string colorPrimario = "#FF00BCD4";
         const string colorSecundario = "#FF000000";
@@ -24,7 +24,7 @@ namespace ProyectoCifrado3
             return Int32.Parse(color.Replace("#", ""), System.Globalization.NumberStyles.HexNumber);
         }
 
-        public CriptoSafe()
+        public Encrypto()
         {
             InitializeComponent();
             caja_archivos.AllowDrop = true;

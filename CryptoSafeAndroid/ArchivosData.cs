@@ -18,29 +18,16 @@ namespace CryptoSafeAndroid
 
         static ArchivosData()
         {
-            var temp = new List<Archivo>();
+            /*var temp = new List<Archivo>();
             AgregarArchivo(temp);
 
-            Archivos = temp;
+            Archivos = temp;*/
+            Archivos = new List<Archivo>();
         }
 
         public static void AgregarArchivo(List<Archivo> archivos)
         {
-            archivos.Add(new Archivo()
-            {
-                //Nombre = "/storage/DD7A-A973/test/IMG_20190504_232840.jpg",
-                Nombre = "/storage/emulated/0/Download/IMG_20190504_232840.jpg",
-                Tamano = "29292KB",
-                Extension = "jpg"
-            });
-
-            archivos.Add(new Archivo()
-            {
-                //Nombre = "/storage/DD7A-A973/test/IMG_20190509_144404.jpg",
-                Nombre = "/storage/emulated/0/Download/IMG_20190509_144404.jpg",
-                Tamano = "665KB",
-                Extension = "png"
-            });
+            
         }
     }
 }

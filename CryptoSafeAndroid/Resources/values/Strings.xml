@@ -1,8 +1,9 @@
 <resources>
-  <string name="app_name">CryptoSafe</string>
+  <string name="app_name">Encrypto</string>
   <string name="action_settings">Settings</string>
   <string name="action_share">Compartir</string>
   <string name="action_search">Buscar</string>
   <string name="action_email">Enviar por Email</string>
   <string name="action_add">Agregar archivos</string>
+  <string name="action_remove">Eliminar archivos</string>
 </resources>

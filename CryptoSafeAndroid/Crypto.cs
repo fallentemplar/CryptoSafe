@@ -1,4 +1,5 @@
-﻿using PCLCrypto;
+﻿using Android.Util;
+using PCLCrypto;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -9,13 +10,15 @@ using System.Threading.Tasks;
 namespace CryptoSafeAndroid
 {
     class Crypto
-    {/// <summary>
+    {
+        const string tag = "MyApp";
+     /// <summary>
      /// Deriva una clave para usar con algoritmos simétricos
      /// </summary>
      /// <param name="contrasena">a password in plain text, perhaps an easy
      /// to remember one
      /// </param>
-     /// <param name="tamano">The size in BITS of the key</param>
+     /// <param name="tamano">El tamaño en bits de la clave</param>
      /// <returns>A key for use in encryption</returns>
         public static byte[] DerivarClaveDeContrasena(string contrasena, int tamano)
         {
@@ -84,23 +87,15 @@ namespace CryptoSafeAndroid
             var claveDerivada = aesGcm.CreateSymmetricKey(keyMaterial);
             try
             {
-                if (cifrar)
-                {
-                    var cifrador = new PCLCrypto.ICryptoTransform[] { WinRTCrypto.CryptographicEngine.CreateEncryptor(claveDerivada) };
-                    await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, cifrador);
-                }
-                else
-                {
-                    var descifrador = new PCLCrypto.ICryptoTransform[] { WinRTCrypto.CryptographicEngine.CreateDecryptor(claveDerivada) };
-                    await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, descifrador);
-                }
+                var mecanismoCriptografico = cifrar ? WinRTCrypto.CryptographicEngine.CreateEncryptor(claveDerivada) : WinRTCrypto.CryptographicEngine.CreateDecryptor(claveDerivada);
+                var transformacion = new PCLCrypto.ICryptoTransform[] { mecanismoCriptografico };
+                await CryptoTransformFileAsync(rutaArchivoOriginal, rutaDestino, transformacion);
             }
             catch
             {
                 throw;
             }
         }
-
         public static async Task CryptoTransformFileAsync(string rutaOrigen, string rutaDestino, PCLCrypto.ICryptoTransform[] transformaciones, CancellationToken tokenDeCancelacion = default)
         {
             const int TamanoBuffer = 4096;
