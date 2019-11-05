@@ -188,17 +188,27 @@ namespace CryptoSafeAndroid
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
+            Log.Debug(tag, "1");
             int id = item.ItemId;
+            Log.Debug(tag, "2");
             if (id == Resource.Id.share)
             {
+                Log.Debug(tag, "3");
                 Intent sharingIntent = new Intent(Intent.ActionSend);
-                sharingIntent.SetType("application/unknown");
+                Log.Debug(tag, "4");
+                sharingIntent.SetType("application/octet-stream");
+                Log.Debug(tag, "5");
                 foreach (var archivo in archivosProcesados)
                 {
-                    Android.Net.Uri uri = (Android.Net.Uri)archivo;
+                    Log.Debug(tag, "6"+archivo);
+                    Android.Net.Uri uri = Android.Net.Uri.Parse(archivo);
+                    Log.Debug(tag, "7");
                     sharingIntent.PutExtra(Intent.ExtraStream, uri);
+                    Log.Debug(tag, "8");
                 }
+                Log.Debug(tag, "9");
                 StartActivity(Intent.CreateChooser(sharingIntent, "Compartir con..."));
+                Log.Debug(tag, "10");
                 return true;
             }
             else if (id == Resource.Id.removeFiles)
